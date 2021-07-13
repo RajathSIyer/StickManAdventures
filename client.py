@@ -18,7 +18,7 @@ class Network:
         self.port = 5555
         self.addr = (self.server, self.port)
         self.p = self.connect()
-        print('Player ', self.p)
+        print('Player ', self.p)  # 0 or 1
 
     def getP(self):
         return self.p
@@ -30,7 +30,7 @@ class Network:
         except:
             pass
 
-    def send(self, data):
+    def send(self, data):  # send data to server
         try:
             self.client.send(str.encode(data))
             # return self.client.recv(2048*2).decode()
@@ -44,7 +44,7 @@ def redrawWindow(win, game, p):
 
     if not(game.connected()):
         font = pygame.font.SysFont("comicsans", 80)
-        text = font.render("Waiting for Player...", 1, (255, 0, 0), True)
+        text = font.render("Finding opponent...", 1, (255, 0, 0), True)
         win.blit(text, (WIDTH//2 - text.get_width()//2, HEIGHT//2 - text.get_height()//2))
     else:
         print('Game is connected!')
@@ -58,7 +58,7 @@ def main():
     clock = pygame.time.Clock()
     n = Network()
     got_game = False
-    player = int(n.getP())
+    player = int(n.getP())  # 0 or 1
     print("You are player", player)
 
     while run:
@@ -67,18 +67,11 @@ def main():
             try:
                 game = n.send("get")
                 print(game.connected())
-                got_game = game.connected()
+                got_game = game.connected()  # bool
             except:
                 run = False
                 print("Couldn't get game")
                 break
-        # try:
-       #    game = n.send("get")
-        #    print(game)
-        # except:
-         #   run = False
-         #   print("Couldn't get game")
-          #  break
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

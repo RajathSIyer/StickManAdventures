@@ -42,11 +42,6 @@ class Stickman:
             self.curr_image = 0
 
 
-# class Opponent(Stickman):
-#     def __init__(self):
-#         super().__init__()
-#         self.position[0] = 1150
-
 class Game:
     def __init__(self, game_id):
         self.p0 = Stickman(0)
@@ -69,6 +64,7 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
+                    pygame.quit()
 
                 if event.type == pygame.K_ESCAPE:
                     run = False
@@ -80,14 +76,13 @@ class Game:
             self.p1.curr_image = int(not self.p1.curr_image)
 
             screen.fill((214, 214, 214))
-            pygame.draw.line(screen, BLACK, (WIDTH // 2, 0),
-                             (WIDTH // 2, HEIGHT),
-                             4)
+            pygame.draw.line(screen, BLACK, (WIDTH // 2, 0), (WIDTH // 2, HEIGHT), 4)  # vertical line
             self.p0.draw(screen)
             self.p1.draw(screen)
             pygame.display.update()
 
 
+"""
 def main():  # can remove
     # game.p0 = Stickman()
     # game.p1 = Opponent()
@@ -125,8 +120,9 @@ def main():  # can remove
 
         pygame.display.update()
         clock.tick(10)
+"""
 
 
-if __name__ == '__main__':
-    game_ = Game(0)
-    game_.run()
+# if __name__ == '__main__':
+#     game_ = Game(0)
+#    game_.run()
