@@ -1,6 +1,7 @@
 import pygame
 import random
 import socket
+# from network import Network
 import pickle
 from typing import *
 import PIL
@@ -28,6 +29,35 @@ LETTER_TO_PYGAME = {'a': pygame.K_a, 'b': pygame.K_b, 'c': pygame.K_c,
 ALPHA_LST = list('abcdefghijklmnopqrstuvwxyz')
 
 
+class Network2:
+    def __init__(self):
+        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server = 'localhost'
+        # self.server = "139.177.194.104"
+        self.port = 5555
+        self.addr = (self.server, self.port)
+        self.p = self.connect()
+        print('Player ', self.p)  # 0 or 1
+
+    def getP(self):
+        return self.p
+
+    def connect(self):
+        try:
+            self.client.connect(self.addr)
+            return self.client.recv(2048).decode()
+        except:
+            pass
+
+    def send(self, data):  # send data to server
+        try:
+            self.client.send(str.encode(data))
+            # return self.client.recv(2048*2).decode()
+            return pickle.loads(self.client.recv(2048 * 2))
+        except socket.error as e:
+            print(e)
+
+
 class Stickman:
     def __init__(self, player):
         """
@@ -46,9 +76,9 @@ class Stickman:
 
     def move(self):
         if self.player == 0:
-            self.position[0] += random.randint(2, 6)
+            self.position[0] += random.randint(45, 55)
         else:
-            self.position[0] += random.randint(-6, -2)
+            self.position[0] += random.randint(-55, -45)
 
     def draw(self, s):
         if self.curr_image == 0:
@@ -66,7 +96,7 @@ class Game:
         self.game_id = game_id
         self.score = [0, 0]  # [p0 score, p1 score]
         self.ready = False
-#        self.net = Network()
+        # self.net = Network2()
         print('here')
 
     def connected(self):
@@ -99,7 +129,7 @@ class Game:
                         temp_Key = LETTER_TO_PYGAME[ALPHA_LST[random_index]]
 
             self.p1.move()
-            # self.p1.position = self.parse_data(self.send_data())
+            # self.p1.position = self.parse_data(self.send_data2())
 
             text = FONT.render(ALPHA_LST[random_index], 1, (0, 0, 0))
             screen.blit(text, (50, 50))
@@ -107,6 +137,21 @@ class Game:
             self.p0.draw(screen)
             self.p1.draw(screen)
             pygame.display.update()
+
+   # def send_data2(self):
+    #    data = str(self.net.p) + ":" + str(self.p0.position[0]) + "," + str(
+     #       self.p0.position[1])
+        # reply = self.net.send_pos(data)
+       # return reply
+
+    @staticmethod
+    def parse_data(data):
+        try:
+            d = data.split(":")[1].split(",")
+            return int(d[0]), int(d[1])
+        except:
+            return 0, 0
+
 
 
 # if __name__ == '__main__':
