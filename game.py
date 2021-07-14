@@ -1,10 +1,6 @@
 import pygame
 import random
-import socket
-# from network import Network
-import pickle
 from typing import *
-import PIL
 
 pygame.init()
 
@@ -26,7 +22,8 @@ LETTER_TO_PYGAME = {'a': pygame.K_a, 'b': pygame.K_b, 'c': pygame.K_c,
                     't': pygame.K_t, 'u': pygame.K_u, 'v': pygame.K_v,
                     'w': pygame.K_w, 'x': pygame.K_x,
                     'y': pygame.K_y, 'z': pygame.K_z}
-ALPHABET = list('abcdefghijklmnopqrstuvwxyz')
+
+ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
 
 
 class Stickman:
@@ -76,6 +73,7 @@ class Game:
         run = True
         temp_letter = random.choice(ALPHABET)
         temp_Key = LETTER_TO_PYGAME[temp_letter]
+
         while run:
             clock.tick(10)
             screen.fill((214, 214, 214))
@@ -100,6 +98,9 @@ class Game:
             # self.p1.position = self.parse_data(self.send_data2())
 
             text = FONT.render(temp_letter, 1, (0, 0, 0))
+
+            # self.p1.move()
+            # self.p1.position = self.parse_data(self.send_data())
             screen.blit(text, (50, 50))
 
             self.p0.draw(screen)
