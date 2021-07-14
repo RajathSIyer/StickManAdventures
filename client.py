@@ -22,8 +22,8 @@ LETTER_TO_PYGAME = {'a': pygame.K_a, 'b': pygame.K_b, 'c': pygame.K_c,
                     't': pygame.K_t, 'u': pygame.K_u, 'v': pygame.K_v,
                     'w': pygame.K_w, 'x': pygame.K_x,
                     'y': pygame.K_y, 'z': pygame.K_z}
-ALPHA_LST = list('abcdefghijklmnopqrstuvwxyz')
-
+ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
+FONT2 = pygame.font.SysFont("comicsans", 60)
 
 WIDTH = 1280
 HEIGHT = 720
@@ -31,6 +31,7 @@ win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Client")
 
 n = Network()
+
 
 def redrawWindow(win, game, p):
     win.fill((128, 128, 128))
@@ -46,8 +47,10 @@ def redrawWindow(win, game, p):
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         clock = pygame.time.Clock()
         run = True
-        random_index = random.randint(0, 25)
-        temp_Key = LETTER_TO_PYGAME[ALPHA_LST[random_index]]
+        temp_letter = random.choice(ALPHABET)
+        temp_Key = LETTER_TO_PYGAME[temp_letter]
+        text_you = FONT.render("You", 1, (0, 0, 0))
+
         print('should be true', n.p == p)
         if n.p != p:
             print('n.p:', n.p, 'p:', p)
@@ -57,6 +60,11 @@ def redrawWindow(win, game, p):
             screen.fill((214, 214, 214))
             pygame.draw.line(screen, BLACK, (WIDTH // 2, 0),
                              (WIDTH // 2, HEIGHT), 4)  # vertical line
+
+            if p == 0:
+                screen.blit(text_you, (100, HEIGHT - 100))
+            else:
+                screen.blit(text_you, (WIDTH - 200, HEIGHT - 100))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -68,14 +76,13 @@ def redrawWindow(win, game, p):
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == temp_Key:
-                        # game.p0.move()
                         if p == 0:
                             game.p0.move()
                         else:
                             game.p1.move()
 
-                        random_index = random.randint(0, 25)
-                        temp_Key = LETTER_TO_PYGAME[ALPHA_LST[random_index]]
+                        temp_letter = random.choice(ALPHABET)
+                        temp_Key = LETTER_TO_PYGAME[temp_letter]
 
             # game.p1.move()
             # n.send('abc')
@@ -83,56 +90,29 @@ def redrawWindow(win, game, p):
                 data = str(n.getP()) + ":" + str(game.p0.position[0]) + "," + str(game.p0.position[1])
                 # game.p1.position = parse_data(send_data2(data))
                 print('client sent:', data)
-                n.client.send(str.encode(data))
-                reply = n.client.recv(2048).decode()
-                print('received:', reply)
+                reply = n.send_pos(data)
+                # n.client.send(str.encode(data))
+                # reply = n.client.recv(2048).decode()
+                # print('received:', reply)
                 if reply[0] != n.getP():  # the problem is this is never True
                     print('here1')
                     game.p1.position = parse_data(reply)
-                # else:
-                 #   reply = n.client.recv(2048).decode()
-                  #  print('here1')
-                   # game.p1.position = parse_data(reply)
+
             else:
                 data = str(n.getP()) + ":" + str(game.p1.position[0]) + "," + str(game.p1.position[1])
                 # game.p0.position = parse_data(send_data2(data))
                 print('client sent:', data)
-                n.client.send(str.encode(data))
-                reply = n.client.recv(2048).decode()
+                reply = n.send_pos(data)
+                # n.client.send(str.encode(data))
+                # reply = n.client.recv(2048).decode()
                 print('received:', reply)
                 if reply[0] != n.getP():
                     game.p0.position = parse_data(reply)
 
-           # if p == 0:
-           #     game.p1.position = parse_data(send_data2(data))
-           # else:
-           #     game.p0.position = parse_data(send_data2(data))
             print(p, game.p0.position, game.p1.position)
-           # n.client.send(data.encode('utf-8'))
             # print('client sent:', data)
-            """
-            try:
-                just_received = n.client.recv(2048)
-                # print(just_received)
-                just_received = just_received.decode('utf-8')
-                print('player', p)
-                print('client received:', just_received)
-                if p != int(just_received[0]):
-                    if int(just_received[0]) == 1 and p == 0:
-                        game.p1.position = parse_data(just_received)
-                    elif int(just_received[0]) == 0 and p == 1:
-                        game.p0.position = parse_data(just_received)
-                    if p == 0:
-                        print('my position:', game.p0.position)
-                        print('Opponents position:', game.p1.position)
-                    else:
-                        print('my position:', game.p1.position)
-                        print('Opponents position:', game.p0.position)
-            except UnicodeDecodeError:
-                print('UnicodeDecodeError')
-            """
 
-            text = FONT.render(ALPHA_LST[random_index], 1, (0, 0, 0))
+            text = FONT.render(temp_letter, 1, (0, 0, 0))
             screen.blit(text, (50, 50))
 
             game.p0.draw(screen)
@@ -190,8 +170,7 @@ def menu_screen():
     while run:
         clock.tick(60)
         win.fill((128, 128, 128))
-        font = pygame.font.SysFont("comicsans", 60)
-        text = font.render("Click to Play!", 1, (255,0,0))
+        text = FONT2.render("Click to Play!", 1, (255,0,0))
         win.blit(text, (100, 200))
         pygame.display.update()
 

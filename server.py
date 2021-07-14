@@ -21,10 +21,11 @@ connected = set()
 games = {}
 game_id_to_players = dict()
 idCount = 0
+pos = ['0:0,270', '1:1150,270']
 
 
 def threaded_client(conn, p, gameId):
-    global idCount
+    global idCount, pos
     conn.send(str.encode(str(p)))
 
     reply = ""
@@ -45,12 +46,14 @@ def threaded_client(conn, p, gameId):
                     pass
                 elif data[1] == ':':
                     # other_player = str(int(not(int(data[0]))))
-                    other_player = str(int(data[0]))
-                    position = data[2:]
-                    conn.send((other_player + ':' + position).encode('utf-8'))
-                    # for client in game_id_to_players[gameId]:
-                      #  client.send((other_player + ':' + position).encode('utf-8'))
-                    print('Server sent:', (other_player + ':' + position))
+                    reply = data
+                    arr = reply.split(':')
+                    id_ = int(arr[0])
+                    nid = int(not id_)
+                    pos[id_] = reply
+                    reply = pos[nid][:]
+                    print('Server sent:', reply)
+                    conn.sendall(str.encode(reply))
                # elif data == 'get':
                 else:
                     conn.sendall(pickle.dumps(game))
