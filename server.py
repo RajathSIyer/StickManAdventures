@@ -30,39 +30,39 @@ def threaded_client(conn, p, gameId):
 
     reply = ""
     while True:
-        # try:
-        data = conn.recv(2048).decode('utf-8')
+        try:
+            data = conn.recv(2048).decode('utf-8')
 
-        if gameId in games:
-            game = games[gameId]
-            # print(game)
-            if not data:
-                break
-            else:
-                print('Server received:', data)
-                # print(pickle.dumps(game))
-
-                if data == "reset":
-                    pass
-                elif data[1] == ':':
-                    # other_player = str(int(not(int(data[0]))))
-                    reply = data
-                    arr = reply.split(':')
-                    id_ = int(arr[0])
-                    nid = int(not id_)
-                    pos[id_] = reply
-                    reply = pos[nid][:]
-                    print('Server sent:', reply)
-                    conn.sendall(str.encode(reply))
-               # elif data == 'get':
+            if gameId in games:
+                game = games[gameId]
+                # print(game)
+                if not data:
+                    break
                 else:
-                    conn.sendall(pickle.dumps(game))
-        else:
-            print(gameId)
-            print(games)
+                    print('Server received:', data)
+                    # print(pickle.dumps(game))
+
+                    if data == "reset":
+                        pass
+                    elif data[1] == ':':
+                        # other_player = str(int(not(int(data[0]))))
+                        reply = data
+                        arr = reply.split(':')
+                        id_ = int(arr[0])
+                        nid = int(not id_)
+                        pos[id_] = reply
+                        reply = pos[nid][:]
+                        print('Server sent:', reply)
+                        conn.sendall(str.encode(reply))
+                   # elif data == 'get':
+                    else:
+                        conn.sendall(pickle.dumps(game))
+            else:
+                print(gameId)
+                print(games)
+                break
+        except:
             break
-        # except:
-         #   break
 
     print("Lost connection")
     try:
