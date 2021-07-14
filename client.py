@@ -34,7 +34,7 @@ class Network:
         try:
             self.client.send(str.encode(data))
             # return self.client.recv(2048*2).decode()
-            return pickle.loads(self.client.recv(2048*2))
+            return pickle.loads(self.client.recv(2048 * 2))
         except socket.error as e:
             print(e)
 
@@ -90,7 +90,7 @@ def menu_screen():
         win.fill((128, 128, 128))
         font = pygame.font.SysFont("comicsans", 60)
         text = font.render("Click to Play!", 1, (255,0,0))
-        win.blit(text, (100,200))
+        win.blit(text, (100, 200))
         pygame.display.update()
 
         for event in pygame.event.get():
