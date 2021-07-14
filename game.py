@@ -1,6 +1,7 @@
 import pygame
 import random
 import socket
+# from network import Network
 import pickle
 from typing import *
 import PIL
@@ -25,7 +26,7 @@ LETTER_TO_PYGAME = {'a': pygame.K_a, 'b': pygame.K_b, 'c': pygame.K_c,
                     't': pygame.K_t, 'u': pygame.K_u, 'v': pygame.K_v,
                     'w': pygame.K_w, 'x': pygame.K_x,
                     'y': pygame.K_y, 'z': pygame.K_z}
-ALPHA_LST = list('abcdefghijklmnopqrstuvwxyz')
+ALPHABET = list('abcdefghijklmnopqrstuvwxyz')
 
 
 class Stickman:
@@ -40,15 +41,14 @@ class Stickman:
         else:
             self.position = [1150, 270]
             self.player = 1
-        # self.image = [pygame.image.load('standing.png'), pygame.image.load('moving.png')]
         self.curr_image = 0
         self.speed = 10
 
     def move(self):
         if self.player == 0:
-            self.position[0] += random.randint(2, 6)
+            self.position[0] += random.randint(45, 55)
         else:
-            self.position[0] += random.randint(-6, -2)
+            self.position[0] += random.randint(-55, -45)
 
     def draw(self, s):
         if self.curr_image == 0:
@@ -66,8 +66,6 @@ class Game:
         self.game_id = game_id
         self.score = [0, 0]  # [p0 score, p1 score]
         self.ready = False
-#        self.net = Network()
-        print('here')
 
     def connected(self):
         return self.ready
@@ -76,8 +74,8 @@ class Game:
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         clock = pygame.time.Clock()
         run = True
-        random_index = random.randint(0, 25)
-        temp_Key = LETTER_TO_PYGAME[ALPHA_LST[random_index]]
+        temp_letter = random.choice(ALPHABET)
+        temp_Key = LETTER_TO_PYGAME[temp_letter]
         while run:
             clock.tick(10)
             screen.fill((214, 214, 214))
@@ -95,13 +93,13 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == temp_Key:
                         self.p0.move()
-                        random_index = random.randint(0, 25)
-                        temp_Key = LETTER_TO_PYGAME[ALPHA_LST[random_index]]
+                        temp_letter = random.choice(ALPHABET)
+                        temp_Key = LETTER_TO_PYGAME[temp_letter]
 
-            self.p1.move()
-            # self.p1.position = self.parse_data(self.send_data())
+            # self.p1.move()
+            # self.p1.position = self.parse_data(self.send_data2())
 
-            text = FONT.render(ALPHA_LST[random_index], 1, (0, 0, 0))
+            text = FONT.render(temp_letter, 1, (0, 0, 0))
             screen.blit(text, (50, 50))
 
             self.p0.draw(screen)

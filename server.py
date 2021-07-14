@@ -19,11 +19,13 @@ print("Waiting for a connection, Server Started")
 
 connected = set()
 games = {}
+game_id_to_players = dict()
 idCount = 0
+pos = ['0:0,270', '1:1150,270']
 
 
 def threaded_client(conn, p, gameId):
-    global idCount
+    global idCount, pos
     conn.send(str.encode(str(p)))
 
     reply = ""
@@ -33,20 +35,31 @@ def threaded_client(conn, p, gameId):
 
         if gameId in games:
             game = games[gameId]
-            print(game)
+            # print(game)
             if not data:
                 break
             else:
                 print('Server received:', data)
+                # print(pickle.dumps(game))
+
                 if data == "reset":
                     pass
-                elif data == 'P0_move':  # we can change this
-                    pass
-                elif data == 'P1_move':
-                    pass
-                print(pickle.dumps(game))
-                conn.sendall(pickle.dumps(game))
+                elif data[1] == ':':
+                    # other_player = str(int(not(int(data[0]))))
+                    reply = data
+                    arr = reply.split(':')
+                    id_ = int(arr[0])
+                    nid = int(not id_)
+                    pos[id_] = reply
+                    reply = pos[nid][:]
+                    print('Server sent:', reply)
+                    conn.sendall(str.encode(reply))
+               # elif data == 'get':
+                else:
+                    conn.sendall(pickle.dumps(game))
         else:
+            print(gameId)
+            print(games)
             break
         # except:
          #   break
@@ -71,9 +84,11 @@ if __name__ == '__main__':
         gameId = (idCount - 1)//2
         if idCount % 2 == 1:
             games[gameId] = Game(gameId)
+            game_id_to_players[gameId] = [conn]
             print("Creating a new game...")
         else:
             games[gameId].ready = True
+            game_id_to_players[gameId].append(conn)
             p = 1
 
         start_new_thread(threaded_client, (conn, p, gameId))
