@@ -43,12 +43,13 @@ class Stickman:
             self.player = 1
         self.curr_image = 0
         self.speed = 10
+        self.ready = False
 
     def move(self):
         if self.player == 0:
-            self.position[0] += random.randint(45, 55)
+            self.position[0] += random.randint(450, 550)
         else:
-            self.position[0] += random.randint(-55, -45)
+            self.position[0] += random.randint(-550, -450)
 
     def draw(self, s):
         if self.curr_image == 0:
@@ -69,6 +70,9 @@ class Game:
 
     def connected(self):
         return self.ready
+
+    def is_game_over(self):
+        return self.p0.position[0] >= WIDTH // 2 or self.p1.position[0] <= WIDTH // 2
 
     def run(self):
         screen = pygame.display.set_mode((WIDTH, HEIGHT))

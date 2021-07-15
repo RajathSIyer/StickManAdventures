@@ -85,10 +85,12 @@ if __name__ == '__main__':
         if idCount % 2 == 1:
             games[gameId] = Game(gameId)
             game_id_to_players[gameId] = [conn]
+            games[gameId].p0.ready = True
             print("Creating a new game...")
         else:
             games[gameId].ready = True
             game_id_to_players[gameId].append(conn)
             p = 1
+            games[gameId].p1.ready = True
 
         start_new_thread(threaded_client, (conn, p, gameId))
