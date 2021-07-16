@@ -37,8 +37,8 @@ pygame.display.set_caption("Client")
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = '172.105.20.159'  # new linode
-        # self.server = 'localhost'
+        # self.server = '172.105.20.159'  # new linode
+        self.server = 'localhost'
         self.port = 5555
         self.addr = (self.server, self.port)
         self.p = self.connect()
@@ -184,17 +184,14 @@ def redrawWindow(win, game, p):
                 text_score = 'P0 ' + str(game.score[0]) + '-' + str(game.score[1]) + ' P1'
                 text_score = FONT.render(text_score, 1, WHITE)
 
-                main_menu_rect = pygame.draw.rect(screen, WHITE, (95, HEIGHT - 150, text_main_menu.get_width()+10, 100), 1)  # Back to Main Menu rect
+                main_menu_rect = pygame.draw.rect(screen, WHITE, (55, HEIGHT - 150, text_main_menu.get_width()+10, 100), 1)  # Back to Main Menu rect
                 screen.blit(text_score, (WIDTH // 2, HEIGHT // 2))
 
-                screen.blit(text_main_menu, (100, HEIGHT-165))  # Back to Main Menu text
+                screen.blit(text_main_menu, (60, HEIGHT-140))  # Back to Main Menu text
                 a = False
                 while not a:
                     for event in pygame.event.get():
-                        if event.type == pygame.MOUSEBUTTONDOWN and 95 < event.pos[0] < 105 + text_main_menu.get_width() and HEIGHT - 150 < event.pos[1] < HEIGHT - 50:
-                            print('clicked')
-                            menu_screen()
-                        if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.type == pygame.MOUSEBUTTONDOWN and main_menu_rect.collidepoint(event.pos):
                             menu_screen()
 
                     game.p0.position = [0, 270]
