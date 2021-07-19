@@ -4,7 +4,6 @@ import socket
 # from network import Network
 import pickle
 from typing import *
-import PIL
 
 pygame.init()
 
@@ -13,8 +12,8 @@ WIDTH = 1280
 HEIGHT = 720
 FONT = pygame.font.SysFont("comicsans", 100)
 
-NUM_TO_IMAGE = {0: pygame.image.load('standing.png'),
-                1: pygame.image.load('moving.png')}
+NUM_TO_IMAGE = {0: pygame.image.load('charImages/standing.png'),
+                1: pygame.image.load('charImages/moving.png')}
 LETTER_TO_PYGAME = {'a': pygame.K_a, 'b': pygame.K_b, 'c': pygame.K_c,
                     'd': pygame.K_d,
                     'e': pygame.K_e, 'f': pygame.K_f, 'g': pygame.K_g,
@@ -47,9 +46,9 @@ class Stickman:
 
     def move(self):
         if self.player == 0:
-            self.position[0] += random.randint(450, 550)
+            self.position[0] += random.randint(WIDTH//200, WIDTH//25)
         else:
-            self.position[0] += random.randint(-550, -450)
+            self.position[0] += random.randint(-WIDTH//25, -WIDTH//200)
 
     def draw(self, s):
         if self.curr_image == 0:

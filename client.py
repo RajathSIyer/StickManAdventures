@@ -11,8 +11,8 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 FONT = pygame.font.SysFont("comicsans", 100)
 
-NUM_TO_IMAGE = {0: pygame.image.load('standing.png'),
-                1: pygame.image.load('moving.png')}
+NUM_TO_IMAGE = {0: pygame.image.load('charImages/standing.png'),
+                1: pygame.image.load('charImages/moving.png')}
 LETTER_TO_PYGAME = {'a': pygame.K_a, 'b': pygame.K_b, 'c': pygame.K_c,
                     'd': pygame.K_d,
                     'e': pygame.K_e, 'f': pygame.K_f, 'g': pygame.K_g,
@@ -114,7 +114,7 @@ def redrawWindow(win, game, p):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-                    pygame.quit()
+                    pygame.quit() 
 
                 if event.type == pygame.K_ESCAPE:
                     run = False
@@ -256,12 +256,15 @@ def main():
 def menu_screen():
     run = True
     clock = pygame.time.Clock()
-
+    win.blit(pygame.image.load("charImages/runner2.jpeg"),[WIDTH,HEIGHT])
     while run:
         clock.tick(60)
-        win.fill((128, 128, 128))
-        text = FONT2.render("Click to Play!", 1, (255,0,0))
-        win.blit(text, (100, 200))
+        #win.fill((0, 0, 0))
+        win.blit(pygame.image.load("charImages/runner3.jpeg"),(0,0))
+        pygame.draw.rect(win, (0, 146, 204), pygame.Rect(WIDTH//2.7,HEIGHT//2.65, WIDTH/3.65, HEIGHT/9))
+        text = FONT2.render("Click to Play!", 1, (255,255,0))
+        win.blit(text, (WIDTH//2.5, HEIGHT//2.5))
+        
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -270,7 +273,7 @@ def menu_screen():
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 run = False
-
+        
     main()
 
 
