@@ -256,11 +256,9 @@ def main():
 def menu_screen():
     run = True
     clock = pygame.time.Clock()
-    win.blit(pygame.image.load("charImages/runner2.jpeg"),[WIDTH,HEIGHT])
     while run:
         clock.tick(60)
-        #win.fill((0, 0, 0))
-        win.blit(pygame.image.load("charImages/runner3.jpeg"),(0,0))
+        win.blit(pygame.image.load("charImages/background.jpeg"),(0,0))
         pygame.draw.rect(win, (0, 146, 204), pygame.Rect(WIDTH//2.7,HEIGHT//2.65, WIDTH/3.65, HEIGHT/9))
         text = FONT2.render("Click to Play!", 1, (255,255,0))
         win.blit(text, (WIDTH//2.5, HEIGHT//2.5))
