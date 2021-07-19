@@ -3,6 +3,7 @@ import pygame
 import pickle
 import random
 import socket
+import pygame_input
 
 pygame.init()
 
@@ -254,23 +255,30 @@ def main():
 
 
 def menu_screen():
+    textinput = pygame_input.TextInput()
     run = True
     clock = pygame.time.Clock()
     while run:
-        clock.tick(60)
         win.blit(pygame.image.load("charImages/background.jpeg"),(0,0))
         pygame.draw.rect(win, (0, 146, 204), pygame.Rect(WIDTH//2.7,HEIGHT//2.65, WIDTH/3.65, HEIGHT/9))
         text = FONT2.render("Click to Play!", 1, (255,255,0))
         win.blit(text, (WIDTH//2.5, HEIGHT//2.5))
-        
+        curr_events = pygame.event.get()
+        x = textinput.update(curr_events)
+        if x:
+            print(textinput.get_text())
+        win.blit(textinput.get_surface(),(200,200))
         pygame.display.update()
-
-        for event in pygame.event.get():
+        clock.tick(60)
+        
+        for event in curr_events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 run = False
+        
+
         
     main()
 
