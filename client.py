@@ -10,6 +10,8 @@ pygame.init()
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
+BLUE = (0, 146, 204)
+YELLOW = (255, 255, 0)
 FONT = pygame.font.SysFont("comicsans", 100)
 
 NUM_TO_IMAGE = {0: pygame.image.load('charImages/standing.png'),
@@ -58,7 +60,6 @@ class Network:
     def send(self, data):  # send data to server
         try:
             self.client.send(str.encode(data))
-            # return self.client.recv(2048*2).decode()
             return pickle.loads(self.client.recv(2048 * 2))
         except socket.error as e:
             print(e)
@@ -77,13 +78,14 @@ class Network:
 n = Network()
 
 
-def redrawWindow(win, game, p):
+def redrawWindow(win, game, p, username: str):
     win.fill((128, 128, 128))
 
-    if not(game.connected()) or (not game.p0.ready) or (not game.p1.ready):
+    if not (game.connected()):
         font = pygame.font.SysFont("comicsans", 80)
         text = font.render("Finding opponent...", 1, (255, 0, 0), True)
-        win.blit(text, (WIDTH//2 - text.get_width()//2, HEIGHT//2 - text.get_height()//2))
+        win.blit(text, (WIDTH // 2 - text.get_width() // 2,
+                        HEIGHT // 2 - text.get_height() // 2))
     else:
         print('Game is connected!')
         # game.run()
@@ -96,6 +98,8 @@ def redrawWindow(win, game, p):
         text_you = FONT.render("You", 1, (0, 0, 0))
 
         text_main_menu = MEDIUM_FONT.render("Back to Main Menu", 1, RED)
+
+        game.usernames[p] = username
 
         print('should be true', n.p == p)
         if n.p != p:
@@ -130,29 +134,26 @@ def redrawWindow(win, game, p):
                         temp_letter = random.choice(ALPHABET)
                         temp_Key = LETTER_TO_PYGAME[temp_letter]
 
-                if game.is_game_over() and event.type == pygame.MOUSEBUTTONDOWN:  # and 95 < event.pos[0] < 105 + text_main_menu.get_width() and HEIGHT - 150 < \ event.pos[1] < HEIGHT - 50:
+                if game.is_game_over() and event.type == pygame.MOUSEBUTTONDOWN:
                     print('clicked')
                     menu_screen()
 
-            # game.p1.move()
-            # n.send('abc')
             if p == 0:
-                data = str(n.getP()) + ":" + str(game.p0.position[0]) + "," + str(game.p0.position[1])
-                # game.p1.position = parse_data(send_data2(data))
+                data = str(n.getP()) + ":" + str(
+                    game.p0.position[0]) + "," + str(game.p0.position[1])
+                print('client sent:', data)
                 reply = n.send_pos(data)
-                # n.client.send(str.encode(data))
-                # reply = n.client.recv(2048).decode()
-                # print('received:', reply)
+
                 if reply[0] != n.getP():
                     print('here1')
                     game.p1.position = parse_data(reply)
 
             else:
-                data = str(n.getP()) + ":" + str(game.p1.position[0]) + "," + str(game.p1.position[1])
-                # game.p0.position = parse_data(send_data2(data))
+                data = str(n.getP()) + ":" + str(
+                    game.p1.position[0]) + "," + str(game.p1.position[1])
+                print('client sent:', data)
                 reply = n.send_pos(data)
-                # n.client.send(str.encode(data))
-                # reply = n.client.recv(2048).decode()
+                print('received:', reply)
                 if reply[0] != n.getP():
                     game.p0.position = parse_data(reply)
 
@@ -178,14 +179,21 @@ def redrawWindow(win, game, p):
                         text = FONT.render("Game Over. You lost", 1, WHITE)
                         screen.blit(text, (100, 100))
 
-                # P0 3-2 P1
-                text_score = 'P0 ' + str(game.score[0]) + '-' + str(game.score[1]) + ' P1'
+                # P0: 3-2
+                # P1: 2-3
+                if p == 0:
+                    text_score = game.usernames[0] + ': ' + str(game.score[0]) + '-' + str(game.score[1])
+                else:
+                    text_score = game.usernames[1] + ': ' + str(game.score[1]) + '-' + str(game.score[0])
                 text_score = FONT.render(text_score, 1, WHITE)
 
-                main_menu_rect = pygame.draw.rect(screen, WHITE, (55, HEIGHT - 150, text_main_menu.get_width()+10, 100), 1)  # Back to Main Menu rect
+                main_menu_rect = pygame.draw.rect(screen, WHITE, (
+                55, HEIGHT - 150, text_main_menu.get_width() + 10, 100),
+                                                  1)  # Back to Main Menu rect
                 screen.blit(text_score, (WIDTH // 2, HEIGHT // 2))
 
-                screen.blit(text_main_menu, (60, HEIGHT-140))  # Back to Main Menu text
+                screen.blit(text_main_menu,
+                            (60, HEIGHT - 140))  # Back to Main Menu text
                 a = False
                 while not a:
                     for event in pygame.event.get():
@@ -195,10 +203,6 @@ def redrawWindow(win, game, p):
                     game.p0.position = [0, 270]
                     game.p1.position = [1150, 270]
                     pygame.display.update()
-                    # pygame.time.wait(5000)
-                    # redrawWindow(screen, game, p)  # make continue playing Rect
-
-            # print('client sent:', data)
 
             text = FONT.render(temp_letter, 1, (0, 0, 0))
             screen.blit(text, (50, 50))
@@ -210,11 +214,6 @@ def redrawWindow(win, game, p):
     pygame.display.update()
 
 
-def send_data2(data):
-    reply = n.send_pos(data)
-    return reply
-
-
 def parse_data(data):
     try:
         d = data.split(":")[1].split(",")
@@ -223,7 +222,7 @@ def parse_data(data):
         return [0, 0]
 
 
-def main():
+def main(username: str):
     run = True
     clock = pygame.time.Clock()
     got_game = False
@@ -237,46 +236,56 @@ def main():
             game = n.send("get")
             print(game)
             print(game.connected())
+            msg = 'P' + str(player) + 'ready'
+            n.client.send(str.encode(msg))
             got_game = game.connected()  # bool
-           # except:  # change back
-            #    run = False
-            #    print("Couldn't get game")
-           #     break
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
 
-        redrawWindow(win, game, player)
+        redrawWindow(win, game, player, username)
 
 
 def menu_screen():
-    textinput = pygame_input.TextInput(text_color=WHITE)
+    textinput = pygame_input.TextInput()
     run = True
     clock = pygame.time.Clock()
+    FONT3 = pygame.font.SysFont("comicsans", 40)
     while run:
         win.blit(pygame.image.load("charImages/background.jpeg"), (0, 0))
-        pygame.draw.rect(win, (0, 146, 204), pygame.Rect(WIDTH//2.7, HEIGHT//2.65, WIDTH//3.65, HEIGHT//9))
-        text = FONT2.render("Click to Play!", 1, (255, 255, 0))
-        win.blit(text, (WIDTH//2.5, HEIGHT//2.5))
+
+        play_rect = pygame.draw.rect(win, BLUE,
+                         pygame.Rect(int(WIDTH // 2.7), int(HEIGHT // 2.55), int(WIDTH // 3.65),
+                                     HEIGHT // 9))
+        play_text = FONT2.render("Click to Play!", 1, (255, 255, 0))
+        win.blit(play_text, (WIDTH // 2.5, HEIGHT // 2.5 + 10))
+        made_by_text = FONT2.render("Made by Raj²", 1, WHITE)
+        win.blit(made_by_text, (WIDTH - made_by_text.get_width() - 10, HEIGHT - 50))
+
+        pygame.draw.rect(win, YELLOW,
+                         pygame.Rect(WIDTH // 5, int(HEIGHT // 1.5), WIDTH // 2,
+                                     HEIGHT // 15))
+        name_text = FONT3.render("Enter Your Name: ", 1, BLUE)
+        win.blit(name_text, (int(WIDTH // 4.95), int(HEIGHT // 1.465)))
+
         curr_events = pygame.event.get()
+        x = textinput.update(curr_events)
+        if x:
+            print(textinput.get_text())  # prints name after enter is pressed
+        win.blit(textinput.get_surface(), (505, 490))
         pygame.display.update()
+        clock.tick(60)
 
         for event in curr_events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 run = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and play_rect.collidepoint(pygame.mouse.get_pos()) and len(textinput.get_text()) > 0:
                 run = False
 
-        x = textinput.update(curr_events)
-        if x: print(textinput.get_text())
-        win.blit(textinput.get_surface(), (250, 250))
-        pygame.display.update()
-        clock.tick(60)
-
-    main()
+    main(textinput.get_text())
 
 
 while True:

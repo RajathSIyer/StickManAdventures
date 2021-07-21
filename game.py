@@ -25,7 +25,7 @@ LETTER_TO_PYGAME = {'a': pygame.K_a, 'b': pygame.K_b, 'c': pygame.K_c,
                     't': pygame.K_t, 'u': pygame.K_u, 'v': pygame.K_v,
                     'w': pygame.K_w, 'x': pygame.K_x,
                     'y': pygame.K_y, 'z': pygame.K_z}
-ALPHABET = list('abcdefghijklmnopqrstuvwxyz')
+ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
 
 
 class Stickman:
@@ -43,6 +43,7 @@ class Stickman:
         self.curr_image = 0
         self.speed = 10
         self.ready = False
+        self.username = ''
 
     def move(self):
         if self.player == 0:
@@ -66,6 +67,7 @@ class Game:
         self.game_id = game_id
         self.score = [0, 0]  # [p0 score, p1 score]
         self.ready = False
+        self.usernames = ['', '']
 
     def connected(self):
         return self.ready
