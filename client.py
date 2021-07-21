@@ -10,6 +10,8 @@ pygame.init()
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
+BLUE = (0, 146, 204)
+YELLOW = (255, 255, 0)
 FONT = pygame.font.SysFont("comicsans", 100)
 
 NUM_TO_IMAGE = {0: pygame.image.load('charImages/standing.png'),
@@ -58,7 +60,6 @@ class Network:
     def send(self, data):  # send data to server
         try:
             self.client.send(str.encode(data))
-            # return self.client.recv(2048*2).decode()
             return pickle.loads(self.client.recv(2048 * 2))
         except socket.error as e:
             print(e)
@@ -130,31 +131,23 @@ def redrawWindow(win, game, p):
                         temp_letter = random.choice(ALPHABET)
                         temp_Key = LETTER_TO_PYGAME[temp_letter]
 
-                if game.is_game_over() and event.type == pygame.MOUSEBUTTONDOWN:  # and 95 < event.pos[0] < 105 + text_main_menu.get_width() and HEIGHT - 150 < \ event.pos[1] < HEIGHT - 50:
+                if game.is_game_over() and event.type == pygame.MOUSEBUTTONDOWN:  
                     print('clicked')
                     menu_screen()
 
-            # game.p1.move()
-            # n.send('abc')
             if p == 0:
                 data = str(n.getP()) + ":" + str(game.p0.position[0]) + "," + str(game.p0.position[1])
-                # game.p1.position = parse_data(send_data2(data))
                 print('client sent:', data)
                 reply = n.send_pos(data)
-                # n.client.send(str.encode(data))
-                # reply = n.client.recv(2048).decode()
-                # print('received:', reply)
+
                 if reply[0] != n.getP():
                     print('here1')
                     game.p1.position = parse_data(reply)
 
             else:
                 data = str(n.getP()) + ":" + str(game.p1.position[0]) + "," + str(game.p1.position[1])
-                # game.p0.position = parse_data(send_data2(data))
                 print('client sent:', data)
                 reply = n.send_pos(data)
-                # n.client.send(str.encode(data))
-                # reply = n.client.recv(2048).decode()
                 print('received:', reply)
                 if reply[0] != n.getP():
                     game.p0.position = parse_data(reply)
@@ -198,11 +191,7 @@ def redrawWindow(win, game, p):
                     game.p0.position = [0, 270]
                     game.p1.position = [1150, 270]
                     pygame.display.update()
-                    # pygame.time.wait(5000)
-                    # redrawWindow(screen, game, p)  # make continue playing Rect
-
-            # print('client sent:', data)
-
+  
             text = FONT.render(temp_letter, 1, (0, 0, 0))
             screen.blit(text, (50, 50))
 
@@ -241,10 +230,7 @@ def main():
             print(game)
             print(game.connected())
             got_game = game.connected()  # bool
-           # except:  # change back
-            #    run = False
-            #    print("Couldn't get game")
-           #     break
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -258,16 +244,24 @@ def menu_screen():
     textinput = pygame_input.TextInput()
     run = True
     clock = pygame.time.Clock()
+    FONT3 = pygame.font.SysFont("comicsans", 40)
     while run:
         win.blit(pygame.image.load("charImages/background.jpeg"),(0,0))
-        pygame.draw.rect(win, (0, 146, 204), pygame.Rect(WIDTH//2.7,HEIGHT//2.65, WIDTH/3.65, HEIGHT/9))
-        text = FONT2.render("Click to Play!", 1, (255,255,0))
-        win.blit(text, (WIDTH//2.5, HEIGHT//2.5))
+        
+        
+        pygame.draw.rect(win, BLUE, pygame.Rect(WIDTH//2.7,HEIGHT//2.55, WIDTH/3.65, HEIGHT/9))
+        play_text = FONT2.render("Click to Play!", 1, (255,255,0))
+        win.blit(play_text, (WIDTH//2.5, HEIGHT//2.5))
+
+        pygame.draw.rect(win, YELLOW, pygame.Rect(WIDTH//5,HEIGHT//1.5, WIDTH/2, HEIGHT/15))
+        name_text = FONT3.render("Enter Your Name: ", 1, BLUE)
+        win.blit(name_text, (WIDTH//4.95, HEIGHT//1.465))
+
         curr_events = pygame.event.get()
         x = textinput.update(curr_events)
         if x:
-            print(textinput.get_text())
-        win.blit(textinput.get_surface(),(200,200))
+            print(textinput.get_text()) #prints name after enter is pressed
+        win.blit(textinput.get_surface(),(505,490))
         pygame.display.update()
         clock.tick(60)
         
@@ -284,4 +278,4 @@ def menu_screen():
 
 
 while True:
-    menu_screen()
+    menu_screen()   
