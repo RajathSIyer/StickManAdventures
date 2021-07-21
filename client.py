@@ -40,8 +40,8 @@ pygame.display.set_caption("Client")
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # self.server = '172.105.20.159'  # new linode
-        self.server = 'localhost'
+        self.server = '172.105.20.159'  # new linode
+        # self.server = 'localhost'
         self.port = 5555
         self.addr = (self.server, self.port)
         self.p = self.connect()
@@ -160,6 +160,9 @@ def redrawWindow(win, game, p, username: str):
             print(p, game.p0.position, game.p1.position)
 
             if game.is_game_over():
+                game.p0.position = [0, 270]
+                game.p1.position = [1150, 270]
+                game.ready = False
                 screen.fill(BLACK)
                 if game.p0.position[0] >= WIDTH // 2:  # p0 wins
                     game.score[0] += 1
