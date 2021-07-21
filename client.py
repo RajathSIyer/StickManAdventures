@@ -115,7 +115,7 @@ def redrawWindow(win, game, p):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-                    pygame.quit() 
+                    pygame.quit()
 
                 if event.type == pygame.K_ESCAPE:
                     run = False
@@ -139,7 +139,6 @@ def redrawWindow(win, game, p):
             if p == 0:
                 data = str(n.getP()) + ":" + str(game.p0.position[0]) + "," + str(game.p0.position[1])
                 # game.p1.position = parse_data(send_data2(data))
-                print('client sent:', data)
                 reply = n.send_pos(data)
                 # n.client.send(str.encode(data))
                 # reply = n.client.recv(2048).decode()
@@ -151,11 +150,9 @@ def redrawWindow(win, game, p):
             else:
                 data = str(n.getP()) + ":" + str(game.p1.position[0]) + "," + str(game.p1.position[1])
                 # game.p0.position = parse_data(send_data2(data))
-                print('client sent:', data)
                 reply = n.send_pos(data)
                 # n.client.send(str.encode(data))
                 # reply = n.client.recv(2048).decode()
-                print('received:', reply)
                 if reply[0] != n.getP():
                     game.p0.position = parse_data(reply)
 
@@ -255,31 +252,30 @@ def main():
 
 
 def menu_screen():
-    textinput = pygame_input.TextInput()
+    textinput = pygame_input.TextInput(text_color=WHITE)
     run = True
     clock = pygame.time.Clock()
     while run:
-        win.blit(pygame.image.load("charImages/background.jpeg"),(0,0))
-        pygame.draw.rect(win, (0, 146, 204), pygame.Rect(WIDTH//2.7,HEIGHT//2.65, WIDTH/3.65, HEIGHT/9))
-        text = FONT2.render("Click to Play!", 1, (255,255,0))
+        win.blit(pygame.image.load("charImages/background.jpeg"), (0, 0))
+        pygame.draw.rect(win, (0, 146, 204), pygame.Rect(WIDTH//2.7, HEIGHT//2.65, WIDTH//3.65, HEIGHT//9))
+        text = FONT2.render("Click to Play!", 1, (255, 255, 0))
         win.blit(text, (WIDTH//2.5, HEIGHT//2.5))
         curr_events = pygame.event.get()
-        x = textinput.update(curr_events)
-        if x:
-            print(textinput.get_text())
-        win.blit(textinput.get_surface(),(200,200))
         pygame.display.update()
-        clock.tick(60)
-        
+
         for event in curr_events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 run = False
-        
 
-        
+        x = textinput.update(curr_events)
+        if x: print(textinput.get_text())
+        win.blit(textinput.get_surface(), (250, 250))
+        pygame.display.update()
+        clock.tick(60)
+
     main()
 
 
