@@ -50,8 +50,8 @@ def threaded_client(conn, p, gameId):
                             game.p0.ready = True
                         else:
                             game.p1.ready = True
-                        if game.p0.ready and game.p1.ready:
-                            game.ready = True
+                        game.ready = game.p0.ready and game.p1.ready
+
                     elif data[1] == ':':
                         # other_player = str(int(not(int(data[0]))))
                         reply = data

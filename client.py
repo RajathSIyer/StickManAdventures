@@ -40,8 +40,8 @@ pygame.display.set_caption("Client")
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = '172.105.20.159'  # new linode
-        # self.server = 'localhost'
+        # self.server = '172.105.20.159'  # new linode
+        self.server = 'localhost'
         self.port = 5555
         self.addr = (self.server, self.port)
         self.p = self.connect()
@@ -87,6 +87,8 @@ def redrawWindow(win, game, p, username: str):
         win.blit(text, (WIDTH // 2 - text.get_width() // 2,
                         HEIGHT // 2 - text.get_height() // 2))
     else:
+        # problem is game.ready is True when it should be False
+        print(game.p0.ready, game.p1.ready)
         print('Game is connected!')
         # game.run()
         print(game.p0.position, game.p1.position)
@@ -101,10 +103,7 @@ def redrawWindow(win, game, p, username: str):
 
         game.usernames[p] = username
 
-        print('should be true', n.p == p)
-        if n.p != p:
-            print('n.p:', n.p, 'p:', p)
-            print(type(n.p), type(p))
+        print('should be true', int(n.p) == p)
         while run:
             clock.tick(10)
             screen.fill((214, 214, 214))
@@ -134,10 +133,6 @@ def redrawWindow(win, game, p, username: str):
                         temp_letter = random.choice(ALPHABET)
                         temp_Key = LETTER_TO_PYGAME[temp_letter]
 
-                if game.is_game_over() and event.type == pygame.MOUSEBUTTONDOWN:
-                    print('clicked')
-                    menu_screen()
-
             if p == 0:
                 data = str(n.getP()) + ":" + str(
                     game.p0.position[0]) + "," + str(game.p0.position[1])
@@ -160,9 +155,6 @@ def redrawWindow(win, game, p, username: str):
             print(p, game.p0.position, game.p1.position)
 
             if game.is_game_over():
-                game.p0.position = [0, 270]
-                game.p1.position = [1150, 270]
-                game.ready = False
                 screen.fill(BLACK)
                 if game.p0.position[0] >= WIDTH // 2:  # p0 wins
                     game.score[0] += 1
@@ -195,16 +187,20 @@ def redrawWindow(win, game, p, username: str):
                                                   1)  # Back to Main Menu rect
                 screen.blit(text_score, (WIDTH // 2, HEIGHT // 2))
 
-                screen.blit(text_main_menu,
-                            (60, HEIGHT - 140))  # Back to Main Menu text
+                screen.blit(text_main_menu, (60, HEIGHT - 140))  # Back to Main Menu text
+                game.p0.position = [0, 270]
+                game.p1.position = [WIDTH - 130, 270]
+
+                game.ready = False
+                game.p0.ready = False
+                game.p1.ready = False
                 a = False
+
                 while not a:
                     for event in pygame.event.get():
                         if event.type == pygame.MOUSEBUTTONDOWN and main_menu_rect.collidepoint(event.pos):
                             menu_screen()
 
-                    game.p0.position = [0, 270]
-                    game.p1.position = [1150, 270]
                     pygame.display.update()
 
             text = FONT.render(temp_letter, 1, (0, 0, 0))
@@ -238,10 +234,13 @@ def main(username: str):
             # try:
             game = n.send("get")
             print(game)
+            game.p0.position = [0, 270]
+            game.p1.position = [WIDTH - 130, 270]
             print(game.connected())
             msg = 'P' + str(player) + 'ready'
             n.client.send(str.encode(msg))
             got_game = game.connected()  # bool
+            print('got_game', got_game)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
