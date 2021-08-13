@@ -12,6 +12,8 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 146, 204)
 YELLOW = (255, 255, 0)
+font = pygame.font.SysFont("comicsans", 80)
+FONT2 = pygame.font.SysFont("comicsans", 60)
 FONT = pygame.font.SysFont("comicsans", 100)
 
 NUM_TO_IMAGE = {0: pygame.image.load('charImages/standing.png'),
@@ -28,7 +30,6 @@ LETTER_TO_PYGAME = {'a': pygame.K_a, 'b': pygame.K_b, 'c': pygame.K_c,
                     'w': pygame.K_w, 'x': pygame.K_x,
                     'y': pygame.K_y, 'z': pygame.K_z}
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
-FONT2 = pygame.font.SysFont("comicsans", 60)
 
 WIDTH = 1280
 HEIGHT = 720
@@ -82,12 +83,16 @@ def redrawWindow(win, game, p, username: str):
     win.fill((128, 128, 128))
 
     if not (game.connected()):
-        font = pygame.font.SysFont("comicsans", 80)
         text = font.render("Finding opponent...", 1, (255, 0, 0), True)
         win.blit(text, (WIDTH // 2 - text.get_width() // 2,
                         HEIGHT // 2 - text.get_height() // 2))
     else:
-        # problem is game.ready is True when it should be False
+        win.fill(BLACK)
+        text = font.render("Found opponent", 1, (255, 0, 0), True)
+        win.blit(text, (WIDTH // 2 - text.get_width() // 2,
+                        HEIGHT // 2 - text.get_height() // 2))
+        pygame.display.update()
+        pygame.time.wait(1000)  # wait 1 second
         print(game.p0.ready, game.p1.ready)
         print('Game is connected!')
         # game.run()
@@ -124,14 +129,14 @@ def redrawWindow(win, game, p, username: str):
                     run = False
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == temp_Key:
-                        if p == 0:
-                            game.p0.move()
-                        else:
-                            game.p1.move()
+                    # if event.key == temp_Key:
+                    if p == 0:
+                        game.p0.move()
+                    else:
+                        game.p1.move()
 
-                        temp_letter = random.choice(ALPHABET)
-                        temp_Key = LETTER_TO_PYGAME[temp_letter]
+                    temp_letter = random.choice(ALPHABET)
+                    temp_Key = LETTER_TO_PYGAME[temp_letter]
 
             if p == 0:
                 data = str(n.getP()) + ":" + str(
@@ -262,13 +267,11 @@ def menu_screen():
                          pygame.Rect(int(WIDTH // 2.7), int(HEIGHT // 2.55), int(WIDTH // 3.65),
                                      HEIGHT // 9))
         play_text = FONT2.render("Click to Play!", 1, (255, 255, 0))
-        win.blit(play_text, (WIDTH // 2.5, HEIGHT // 2.5 + 10))
+        win.blit(play_text, (int(WIDTH // 2.5), int(HEIGHT // 2.5 + 10)))
         made_by_text = FONT2.render("Made by Raj²", 1, WHITE)
         win.blit(made_by_text, (WIDTH - made_by_text.get_width() - 10, HEIGHT - 50))
 
-        pygame.draw.rect(win, YELLOW,
-                         pygame.Rect(WIDTH // 5, int(HEIGHT // 1.5), WIDTH // 2,
-                                     HEIGHT // 15))
+        pygame.draw.rect(win, YELLOW, pygame.Rect(WIDTH // 5, int(HEIGHT // 1.5), WIDTH // 2, HEIGHT // 15))  # rect to enter name
         name_text = FONT3.render("Enter Your Name: ", 1, BLUE)
         win.blit(name_text, (int(WIDTH // 4.95), int(HEIGHT // 1.465)))
 
@@ -282,8 +285,8 @@ def menu_screen():
 
         for event in curr_events:
             if event.type == pygame.QUIT:
-                pygame.quit()
                 run = False
+                pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN and play_rect.collidepoint(pygame.mouse.get_pos()) and len(textinput.get_text()) > 0:
                 run = False
 
